@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name="drive_block" params="name *origin inverted">
+
+  <joint name="${name}_drive_block_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="${name}_block_suspension"/>
+    <xacro:insert_block name="origin"/>
+  </joint>
+
+  <link name="${name}_block_suspension">
+    <visual>
+      <origin xyz="0 0 ${-motor_suspension_height/2+profile_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${motor_suspension_width} ${motor_suspension_depth} ${motor_suspension_height}"/>
+      </geometry>
+      <material name="aluminium"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${-motor_suspension_height/2+profile_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${motor_suspension_width} ${motor_suspension_depth} ${motor_suspension_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${motor_suspension_mass}"/>
+      <xacro:box_inertia m="${motor_suspension_mass}" x="${motor_suspension_width}" y="${motor_suspension_depth}" z="${motor_suspension_height}"/>
+    </inertial>
+  </link>
+
+  <xacro:if value="${inverted}">
+    <xacro:property name="gear_dislocation" value="0.01"/>
+    <xacro:if value="${front_drive}">
+      <xacro:property name="wheel_orientation" value="0"/>
+    </xacro:if>
+    <xacro:unless value="${front_drive}">
+      <xacro:property name="wheel_orientation" value="${pi}"/>
+    </xacro:unless>
+  </xacro:if>
+  <xacro:unless value="${inverted}">
+    <xacro:property name="gear_dislocation" value="-0.01"/>
+    <xacro:if value="${front_drive}">
+      <xacro:property name="wheel_orientation" value="${pi}"/>
+    </xacro:if>
+    <xacro:unless value="${front_drive}">
+      <xacro:property name="wheel_orientation" value="0"/>
+    </xacro:unless>
+  </xacro:unless>
+
+  <joint name="${name}_motor_joint" type="fixed">
+    <parent link="${name}_block_suspension"/>
+    <child  link="${name}_motor"/>
+    <origin xyz="${gear_dislocation} ${-motor_suspension_depth/2-motor_gearbox_depth} -0.075" rpy="0 ${-pi*inverted} 0"/>
+  </joint>
+
+  <link name="${name}_motor">
+    <visual>
+      <origin xyz="0.009 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/gear_motor.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.04 0.01 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${motor_gearbox_length} ${motor_gearbox_depth} ${motor_gearbox_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.04 0.01 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${motor_gearbox_length} ${motor_gearbox_depth} ${motor_gearbox_height}"/>
+      </geometry>
+      <mass value="${motor_gearbox_mass}"/>
+      <xacro:box_inertia m="${motor_gearbox_mass}" x="${motor_gearbox_length}" y="${motor_gearbox_depth}" z="${motor_gearbox_height}"/>
+    </inertial>
+  </link>
+
+  <joint name="${name}_wheel_joint" type="continuous">
+    <parent link="${name}_motor"/>
+    <child  link="${name}_drive_wheel"/>
+    <origin xyz="0 ${motor_gearbox_depth+drive_wheel_width/2+motor_suspension_depth*2} 0" rpy="${-pi/2} 0 ${wheel_orientation}"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+
+  <link name="${name}_drive_wheel">
+    <visual>
+      <xacro:drive_wheel_geometry/>
+      <material name="rubber"/>
+    </visual>
+    <collision>
+      <xacro:drive_wheel_geometry/>
+    </collision>
+    <inertial>
+      <xacro:drive_wheel_geometry/>
+      <mass value="${drive_wheel_mass}"/>
+      <xacro:cylinder_inertia m="${drive_wheel_mass}" r="${drive_wheel_radius}" h="${drive_wheel_width}"/>
+    </inertial>
+  </link>
+  <gazebo reference="${name}_drive_wheel">
+    <material>Gazebo/DarkGrey</material>
+    <mu1>2.0</mu1>
+    <mu2>2.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+</xacro:macro>
+
+
+</robot>

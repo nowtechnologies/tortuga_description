@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- fixed bridge holding the pivoting axle -->
+  <joint name="caster_bridge_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="bridge_suspension"/>
+    <origin xyz="${-long_profile_length/2+profile_width/2}
+                 0
+                 ${-axle_bridge_height/2-profile_height/2}"
+            rpy="0 0 0"/>
+  </joint>
+  <link name="bridge_suspension">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/axle_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="aluminium"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/axle_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${axle_bridge_depth} ${axle_bridge_width} ${axle_bridge_height}"/>
+      </geometry>
+      <mass value="${axle_bridge_mass}"/>
+      <xacro:box_inertia m="${axle_bridge_mass}" x="${axle_bridge_depth}" y="${axle_bridge_width}" z="${axle_bridge_height}"/>
+    </inertial>
+  </link>
+
+  <!-- pivoting axle holding the two caster axles -->
+  <joint name="pivoting_axle_joint" type="fixed">
+    <parent link="bridge_suspension"/>
+    <child  link="pivoting_axle"/>
+    <origin xyz="0 0 -0.0075"
+            rpy="0 0 0"/>
+    <limit effort="1" velocity="1" lower="-0.1" upper="0.1"/>
+    <dynamics damping="${axle_damping}" friction="${axle_friction}"/>
+    <axis xyz="1 0 0"/>
+  </joint>
+  <link name="pivoting_axle">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/pivoting_axle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="aluminium"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/pivoting_axle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${pivoting_axle_depth} ${pivoting_axle_length} ${pivoting_axle_height}"/>
+      </geometry>
+      <mass value="${pivoting_axle_mass}"/>
+      <xacro:box_inertia m="${pivoting_axle_mass}" x="${pivoting_axle_depth}" y="${pivoting_axle_length}" z="${pivoting_axle_height}"/>
+    </inertial>
+  </link>
+
+  <!-- SIDE-A caster assembly -->
+  <joint name="A_side_caster_axle_joint" type="continuous">
+    <parent link="pivoting_axle"/>
+    <child  link="A_side_caster_axle"/>
+    <origin xyz="0 ${caster_track_width/2} ${caster_height_trimmer}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="A_side_caster_axle">
+    <visual>
+      <origin xyz="-0.015 -0.005 -0.03" rpy="0 0 ${-pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/caster_axle_side_a.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="aluminium"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.03 -0.025 -0.045" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.003 0.06"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.03 -0.025 -0.045" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.003 0.06"/>
+      </geometry>
+      <mass value="0.01"/>
+      <xacro:box_inertia m="0.01" x="0.03" y="0.003" z="0.06"/>
+    </inertial>
+  </link>
+  <gazebo reference="A_side_caster_axle">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+  <!-- wheel -->
+  <joint name="A_side_caster_wheel_joint" type="continuous">
+    <parent link="A_side_caster_axle"/>
+    <child  link="A_side_caster_wheel"/>
+    <origin xyz="-0.03 0 -0.06" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  <link name="A_side_caster_wheel">
+    <visual>
+      <xacro:caster_wheel_geometry/>
+      <material name="rubber"/>
+    </visual>
+    <collision>
+      <xacro:caster_wheel_geometry/>
+    </collision>
+    <inertial>
+      <xacro:caster_wheel_geometry/>
+      <mass value="${caster_wheel_mass}"/>
+      <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_width}"/>
+    </inertial>
+  </link>
+  <gazebo reference="A_side_caster_wheel">
+    <material>Gazebo/DarkGrey</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+  <!-- SIDE-B caster assembly -->
+  <joint name="B_side_caster_axle_joint" type="continuous">
+    <parent link="pivoting_axle"/>
+    <child  link="B_side_caster_axle"/>
+    <origin xyz="0 ${-caster_track_width/2} ${caster_height_trimmer}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="B_side_caster_axle">
+    <visual>
+      <origin xyz="-0.015 0.005 -0.03" rpy="0 0 ${-pi/2}"/>
+      <geometry>
+        <mesh filename="package://tortuga/meshes/caster_axle_side_b.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="aluminium"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.03 0.025 -0.045" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.003 0.06"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.03 0.025 -0.045" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.003 0.06"/>
+      </geometry>
+      <mass value="${caster_axle_mass}"/>
+      <xacro:box_inertia m="${caster_axle_mass}" x="0.03" y="0.003" z="0.06"/>
+    </inertial>
+  </link>
+  <gazebo reference="B_side_caster_axle">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+  <!-- wheel -->
+  <joint name="B_side_caster_wheel_joint" type="continuous">
+    <parent link="B_side_caster_axle"/>
+    <child  link="B_side_caster_wheel"/>
+    <origin xyz="-0.03 0 -0.06" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  <link name="B_side_caster_wheel">
+    <visual>
+      <xacro:caster_wheel_geometry/>
+      <material name="rubber"/>
+    </visual>
+    <collision>
+      <xacro:caster_wheel_geometry/>
+    </collision>
+    <inertial>
+      <xacro:caster_wheel_geometry/>
+      <mass value="${caster_wheel_mass}"/>
+      <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_width}"/>
+    </inertial>
+  </link>
+  <gazebo reference="B_side_caster_wheel">
+    <material>Gazebo/DarkGrey</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+</robot>

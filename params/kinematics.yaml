@@ -1,0 +1,10 @@
+input_tangent_wheel_speed : true
+output_tangent_wheel_speed: true
+velocity_noise_cutoff     : 0.001
+wheel_separation          : 0.255
+wheel_radius              : 0.055
+ICC_method                : true
+tf_enabled                : false
+publish_rate              : 50
+base_frame                : base_footprint
+global_frame              : odom

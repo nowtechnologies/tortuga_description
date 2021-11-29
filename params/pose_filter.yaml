@@ -1,0 +1,8 @@
+output_frame          : odom
+base_footprint_frame  : base_footprint
+freq                  : 50.0
+sensor_timeout        : 1.0
+odom_used             : true
+imu_used              : true
+vo_used               : false
+debug                 : false

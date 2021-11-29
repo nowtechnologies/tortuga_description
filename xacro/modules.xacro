@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Empty sensor module -->
+
+  <xacro:macro name="dummy" params="name parent_link *origin">
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
+        <geometry>
+          <mesh filename="package://tortuga/meshes/dummy_module.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="plastic"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Empty antenna module -->
+
+  <xacro:macro name="antenna" params="name parent_link *origin">
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.006 0 0" rpy="0 0 ${-pi/2}"/>
+        <geometry>
+          <mesh filename="package://tortuga/meshes/antenna_module.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="plastic"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Raspicam with infrared emitters -->
+
+  <xacro:macro name="picam_noir" params="name parent_link *origin">
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.0085 0 0" rpy="0 0 ${-pi/2}"/>
+        <geometry>
+          <mesh filename="package://tortuga/meshes/picam_noir_module.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="plastic"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Genius KS05 wide angle camera with microphones -->
+
+  <xacro:macro name="genius_ks05" params="name parent_link *origin">
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.0025 0 0" rpy="0 0 ${-pi/2}"/>
+        <geometry>
+          <mesh filename="package://tortuga/meshes/genius_module.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="plastic"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+</robot>

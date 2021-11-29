@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="pose_filter" default="true"/>
+
+  <include file="$(find tortuga)/launch/description.launch"/>
+  <include file="$(find tortuga)/launch/peripheral/controller.launch"/>
+  <include file="$(find tortuga)/launch/application/pose_filter.launch" if="$(arg pose_filter)"/>
+
+</launch>
