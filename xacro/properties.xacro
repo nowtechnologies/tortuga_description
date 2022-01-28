@@ -8,7 +8,7 @@
   <xacro:property name="body_width"              value="0.2800"/>
   <xacro:property name="body_height"             value="0.0400"/>
   <xacro:property name="body_length"             value="0.4200"/>
-  <xacro:property name="body_mass"               value="1.0000"/> <!-- khm... -->
+  <xacro:property name="body_mass"               value="0.4000"/> <!-- khm..., was 1kg -->
 
   <!-- battery -->
   <xacro:property name="battery_width"           value="0.0800"/>

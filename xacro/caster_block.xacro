@@ -35,7 +35,7 @@
   </link>
 
   <!-- pivoting axle holding the two caster axles -->
-  <joint name="pivoting_axle_joint" type="fixed">
+  <joint name="pivoting_axle_joint" type="revolute">
     <parent link="bridge_suspension"/>
     <child  link="pivoting_axle"/>
     <origin xyz="0 0 -0.0075"
@@ -74,6 +74,7 @@
     <child  link="A_side_caster_axle"/>
     <origin xyz="0 ${caster_track_width/2} ${caster_height_trimmer}" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <dynamics damping="${axle_damping}" friction="${axle_friction}"/>
   </joint>
   <link name="A_side_caster_axle">
     <visual>
@@ -144,6 +145,7 @@
     <child  link="B_side_caster_axle"/>
     <origin xyz="0 ${-caster_track_width/2} ${caster_height_trimmer}" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <dynamics damping="${axle_damping}" friction="${axle_friction}"/>
   </joint>
   <link name="B_side_caster_axle">
     <visual>
@@ -202,10 +204,13 @@
     <material>Gazebo/DarkGrey</material>
     <mu1>1.0</mu1>
     <mu2>1.0</mu2>
-    <kp>1000000.0</kp>
+    <slip1>0.0</slip1>
+    <slip2>0.0</slip2>
+    <kp>10000000.0</kp>
     <kd>100.0</kd>
-    <minDepth>0.001</minDepth>
+    <minDepth>0.0</minDepth>
     <maxVel>1.0</maxVel>
+    <!--<frictionModel>cone_model</frictionModel>-->
   </gazebo>
 
 </robot>
